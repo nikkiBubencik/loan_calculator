@@ -21,7 +21,7 @@ while principal + interest > 0:
 print(weeks_to_pay)
 
 class Loan():
-    def __init__(self, principal_float, interest_float, interest_rate, start_date, minimum_float) -> None:
+    def __init__(self, principal_float, interest_float, interest_rate, start_date, minimum_float) -> flaot:
         self.principal_float = principal_float
         self.interest_float = interest_float
         self.interest_rate = interest_rate
@@ -29,7 +29,20 @@ class Loan():
         self.minimum_float = minimum_float
         
     def make_payment(self, payment_float):
-        pass
+        sub_payment = payment
+        if interest > payment:
+            self.interest -= payment
+        else:
+            sub_payment -= interest
+            self.interest = 0
+
+            if sub_payment > self.principal:
+                sub_payment -= self.principal
+                self.pricipal = 0
+            else:
+                self.principal -= sub_payment
+                sub_payment = 0
+        return selfpayment
     
     def add_interest(self):
         pass
