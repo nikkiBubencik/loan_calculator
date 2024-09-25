@@ -1,5 +1,5 @@
 class Loan():
-    def __init__(self, name_str principal_float, interest_float, interest_rate, start_date, minimum_float) -> None:
+    def __init__(self, name_str, principal_float, interest_float, interest_rate, start_date, minimum_float) -> None:
         self.name = name_str
         self.principal_float = principal_float
         self.interest_float = interest_float
@@ -23,7 +23,7 @@ class Loan():
             else:
                 self.principal_float -= payment_float
                 payment_float = 0
-        return (self.status, payment_float)
+        return (self.paid_off_status, payment_float)
     
     def add_interest(self, frequency):
         if (frequency == 'weekly'):
