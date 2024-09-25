@@ -2,6 +2,8 @@
 import Loan from loans
 
 def get_loans():
+  """Fucntion to get the loan information for each loan from user
+  returns Loans as a dictionary key: loan name and value: loan type class"""
   num_loans = int(input("How many loans do you have"))
   loan_dict = {}
   
@@ -38,16 +40,21 @@ def sort_loans_by_interest_rate(loan_dict):
   
 def avalanche(loan_dict):
   """ Making it right now to just send all payment to highest interest loan
-  active_loans = sort_loans_by_interest_rate(loan_dict)
-  paid_off_loans = []
-  current_date = "today"
+  NEED to adjust payment scheule to pay minmums first the highest interest rate"""
+  active_loans_list = sort_loans_by_interest_rate(loan_dict)
+  paid_off_loans_list = []
+  current_date = 0
   
-  while len(active_loans) > 0:
+  while len(active_loans_list) > 0:
     sub_payment = payment_amount
-    for i inrange(len(active_loans)):
-      sub_payment = active_loans[i].make_payment(sub_payment)
-      if active_loans[i].get_total_left() == 0:
-        paid_off_loans = {active_loans[i], current_date)
-        del active_loans[i]
+    for i inrange(len(active_loans_list)):
+      sub_payment = active_loans_list[i].make_payment(sub_payment)
+      if active_loans_list[i].get_total_left() == 0:
+        paid_off_loans = {active_loans_list[i], current_date)
+        del active_loans_list[i]
         
-  curretn_date = "updated date"
+    curretn_date += 1
+  return paid_off_loans_list
+paid_off_loans = avalanche(loan_dict)
+for loan, paid_off_date in paid_off_loans:
+  print(f"Loan {loan.name} paid off in {paid_off_date}")
