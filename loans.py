@@ -13,17 +13,17 @@ class Loan():
             self.interest_float -= payment_float
             payment_float = 0
         else:
-            payment_float -= interest
+            payment_float -= self.interest_float
             self.interest_float = 0
 
-            if payment_float > self.principal_float:
+            if payment_float >= self.principal_float:
                 payment_float -= self.principal_float
                 self.principal_float = 0
                 self.paid_off_status = True
             else:
                 self.principal_float -= payment_float
                 payment_float = 0
-        return (self.paid_off_status, payment_float)
+        return payment_float
     
     def add_interest(self, frequency):
         if (frequency == 'weekly'):
@@ -41,4 +41,7 @@ class Loan():
 
     def get_name(self):
         return self.name
+    
+    def get_paid_off_status(self):
+        return self.paid_off_status
         

@@ -16,27 +16,27 @@ class TestLoan(unittest.TestCase):
         self.assertIsInstance(self.loan.start_date, datetime)
         self.assertEqual(self.loan.minimum_float, 100.0)
         self.assertFalse(self.loan.paid_off_status)
-
+    
     def test_make_payment_partial_interest(self):
         self.loan.interest_float = 50.0
-        paid_off, remaining_payment = self.loan.make_payment(30.0)
-        self.assertFalse(paid_off)
+        remaining_payment = self.loan.make_payment(30.0)
+        self.assertFalse(self.loan.get_paid_off_status())
         self.assertEqual(remaining_payment, 0.0)
         self.assertEqual(self.loan.interest_float, 20.0)
         self.assertEqual(self.loan.principal_float, 1000.0)
 
     def test_make_payment_full_interest(self):
         self.loan.interest_float = 50.0
-        paid_off, remaining_payment = self.loan.make_payment(60.0)
-        self.assertFalse(paid_off)
+        remaining_payment = self.loan.make_payment(60.0)
+        self.assertFalse(self.loan.get_paid_off_status())
         self.assertEqual(remaining_payment, 0)  # Remaining payment after paying interest
         self.assertEqual(self.loan.interest_float, 0.0)
         self.assertEqual(self.loan.principal_float, 990.0)
 
     def test_make_payment_full_principal(self):
         self.loan.interest_float = 50.0
-        paid_off, remaining_payment = self.loan.make_payment(1050.0)
-        self.assertTrue(paid_off)
+        remaining_payment = self.loan.make_payment(1050.0)
+        self.assertTrue(self.loan.get_paid_off_status())
         self.assertEqual(remaining_payment, 0.0)
         self.assertEqual(self.loan.interest_float, 0.0)
         self.assertEqual(self.loan.principal_float, 0.0)
