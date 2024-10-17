@@ -1,0 +1,10 @@
+Pay Off Method Used: Avalanche
+In this method any extra money each month would be paid to the loans with the highest interest rates first
+Example: if you have 2 loans, Loan 1 is 4.5% with a $50 monthly minimum and Loan 2 is 5% with a $35 monthly minimum and you are paying $100 a month, then the extra $15 a month will go to paying off Loan 2
+
+---------------------------------------------
+Paying $0.0 to loan repayment monthly
+Loan Name            | Loan Paid Off Date
+
+Your Loans:
+Loan            Principal     Interest Rate   Minimum     Repayment Start Date
