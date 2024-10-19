@@ -3,7 +3,7 @@ Nicole Bubencik
 Class: CS 521 - Fall 1
 Date: 10/17/2024
 Final Project
-Loan Payoff Calculator
+Student Loan Payoff Calculator
 Gathers a user's student loan information and determines how long it would take to pay off
 """
 from loans import Loan
@@ -116,10 +116,8 @@ def write_valid_output(filename, paid_off_loans_list, how_to_pay_off):
   """Write Payoff Method and Information on all loans and When each loan gets paid off"""
   with open(filename, "w") as output_file:
     print(f"Pay Off Method Used: {how_to_pay_off['method']}", file=output_file)
-    print("In this method any extra money each month would be paid to the loans with the highest interest rates first", file=output_file)
-    print("Example: if you have 2 loans, Loan 1 is 4.5% with a $50 monthly minimum and Loan 2 is 5% with a $35 monthly minimum and you are paying $100 a month, then the extra $15 a month will go to paying off Loan 2\n", file=output_file)  
-    print("-"*45, file=output_file)
     print(f"Paying ${how_to_pay_off['payment_amount']:.2f} to loan repayment {how_to_pay_off['frequency']}", file=output_file)
+    print("-"*45, file=output_file)
     print("{:20s} | Loan Paid Off Date".format("Loan Name"), file=output_file)
     for loan, pay_off_date in paid_off_loans_list:
       print(f"{loan.get_name():20s} | {pay_off_date} ", file=output_file)
@@ -192,16 +190,17 @@ def pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_lef
       if loan[0].get_paid_off_status():
         paid_off_loans_list.append((loan[0], current_date))
       else:
-        loans_to_keep.append(loan)
         # loan is now in repayment
         if is_loan_in_repayment(loan[0].start_date, current_date):
           other_loans_list[index][0].set_in_repayment_bool(True)
           active_interest_loans_list.append((other_loans_list[index][0], other_loans_list[index][0].get_minimum_due()))
+        else:
+          loans_to_keep.append(loan)
   
   # if loan becomes active then add to active loans list in correct position
-  if len(other_loans_list) != len(loans_to_keep):
+  if other_loans_list != loans_to_keep:
     other_loans_list[:] = loans_to_keep
-    
+      
     if payment_method == "avalanche":
       active_interest_loans_list = sort_loans_by_interest_rate(active_interest_loans_list)
     else:
@@ -224,37 +223,18 @@ def update_schedule(schedule, current_date, current_payments):
   schedule.append((current_date, current_payments.copy()))
   current_payments.clear()
     
-def snowball(loan_dict):
+def pay_off_loans(loan_dict, payment_method):
   """Calculate paying off loans using snowball method
   Snowball method: paying off loans with higher principals first
-  """
-  active_interest_loans_list = sort_loans_by_principal(loan_dict["active_interest_loans"])
-  other_loans_list = sort_loans_by_principal(loan_dict["other_loans"])
-  
-  paid_off_loans_list = []
-  current_date = datetime.now().date()
-  schedule = []
-  current_payments = {}
-  
-  while active_interest_loans_list + other_loans_list:
-
-    # get sum of all monthly minimum due and how much "leftover" money to send to high interest loans
-    payment_left = get_payment_left(active_interest_loans_list, payment_amount)
-    payment_left = pay_active_loans(active_interest_loans_list, payment_left, current_payments, paid_off_loans_list, current_date)
-
-    pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_left, current_payments, paid_off_loans_list, current_date, "snowball")
-
-    update_schedule(schedule, current_date, current_payments)
-    current_date += timedelta(days=MONTH_DAYS[current_date.month])
-
-  return paid_off_loans_list, schedule
-
-def avalanche(loan_dict):
-  """Calculate paying off loans using avalanche method
   Avalanche method: paying off loans with higher interest rate first
   """
-  active_interest_loans_list = sort_loans_by_interest_rate(loan_dict["active_interest_loans"])
-  other_loans_list = sort_loans_by_interest_rate(loan_dict["other_loans"])
+  # sort loans by principal and if avalanche resort by interest rate
+  # if payment_method == "snowball":
+  active_interest_loans_list = sort_loans_by_principal(loan_dict["active_interest_loans"])
+  other_loans_list = sort_loans_by_principal(loan_dict["other_loans"])
+  if payment_method == "avalanche":
+    active_interest_loans_list = sort_loans_by_interest_rate(active_interest_loans_list)
+    other_loans_list = sort_loans_by_interest_rate(other_loans_list)
 
   paid_off_loans_list = []
   current_date = datetime.now().date()
@@ -262,12 +242,12 @@ def avalanche(loan_dict):
   current_payments = {}
   
   while active_interest_loans_list + other_loans_list:
-    check_unsubsidized_loans(active_interest_loans_list, current_date)
+
     # get sum of all monthly minimum due and how much "leftover" money to send to high interest loans
     payment_left = get_payment_left(active_interest_loans_list, payment_amount)
     payment_left = pay_active_loans(active_interest_loans_list, payment_left, current_payments, paid_off_loans_list, current_date)
 
-    pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_left, current_payments, paid_off_loans_list, current_date, "avalanche")
+    pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_left, current_payments, paid_off_loans_list, current_date, payment_method)
 
     update_schedule(schedule, current_date, current_payments)
     current_date += timedelta(days=MONTH_DAYS[current_date.month])
@@ -303,10 +283,10 @@ payment_amount = get_payment_amount()
 payment_freq = 'monthly'
 filename = "output.txt"
 
-if payment_method == "avalanche":
-  paid_off_loans, schedule = avalanche(loan_dict)
-else:
-  paid_off_loans, schedule = snowball(loan_dict)
+# if payment_method == "avalanche":
+paid_off_loans, schedule = pay_off_loans(loan_dict, payment_method)
+# else:
+#   paid_off_loans, schedule = snowball(loan_dict)
 
 how_to_pay_off = {"method": payment_method, "frequency": payment_freq, "payment_amount": payment_amount}
 
