@@ -15,7 +15,19 @@ class Loan():
         self.paid_off_status = False
         self.unsubsidized_bool = unsubsidized_bool
         self.after_start_date_bool = False
-
+        
+    def __str__(self):
+        """return Important loan information"""
+        return f"{self.name:15s} ${self.__original_pricipal_float:<12.2f} {self.interest_rate:<15.2%} ${self.total_interest_float:<15.2f} ${self.minimum_float:<10.2f} {self.start_date}"
+    
+    def __eq__(self, other):
+        """Check if two loans are the same"""
+        if isinstance(other, Loan):
+            return self.name == other.name and \
+                    self.principal_float == other.principal_float and \
+                    self.interest_rate == other.interest_rate
+        return False
+    
     def make_payment(self, payment_float):
         """Make loan payment"""
         if self.unsubsidized_bool or self.after_start_date_bool:
@@ -77,14 +89,3 @@ class Loan():
         """Get loan repayment start date"""
         return self.start_date
     
-    def __str__(self):
-        """return Important loan information"""
-        return f"{self.name:15s} ${self.__original_pricipal_float:<12.2f} {self.interest_rate:<15.2%} ${self.total_interest_float:<15.2f} ${self.minimum_float:<10.2f} {self.start_date}"
-    
-    def __eq__(self, other):
-        """Check if two loans are the same"""
-        if isinstance(other, Loan):
-            return self.name == other.name and \
-                    self.principal_float == other.principal_float and \
-                    self.interest_rate == other.interest_rate
-        return False
