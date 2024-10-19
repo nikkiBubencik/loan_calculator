@@ -1,0 +1,8 @@
+How to run Loan Calculator:
+1. run loan_calculator.py in your IDE
+2. Determine which payoff method to use and entere correspoding number
+3. Enter number of loans you will enter
+4. Enter loan information that is prompted
+5. Repeat step 4 for each loan 
+6. Enter amount you plan to contribute each month
+7. Look at output.txt For information and if presetn schedule.txt for payoff schedule

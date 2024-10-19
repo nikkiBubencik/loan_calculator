@@ -1,3 +1,6 @@
+"""
+Define the Loan class
+"""
 class Loan():
     def __init__(self, name_str, principal_float, interest_float, interest_rate, start_date, minimum_float, unsubsidized_bool) -> None:
         """Intialize a Loan instance"""

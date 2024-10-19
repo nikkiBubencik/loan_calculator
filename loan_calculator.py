@@ -207,14 +207,14 @@ def pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_lef
       active_interest_loans_list = sort_loans_by_principal(active_interest_loans_list)
   return payment_left
           
-def get_payment_left(active_interest_loans_list, payment_amount):
+def get_payment_left(active_interest_loans_list, payment_amount, filename):
   """Calculate amount of money left for loans after paying all minimums that are due"""
   minimum_due_sum = sum(loan[1] for loan in active_interest_loans_list)
   payment_left = payment_amount - minimum_due_sum
 
   # insufficient monthly payment 
   if payment_left < 0:
-    write_invalid_payment_output(minimum_due_sum)
+    write_invalid_payment_output(filename, minimum_due_sum)
     exit()
   return payment_left
 
@@ -223,13 +223,12 @@ def update_schedule(schedule, current_date, current_payments):
   schedule.append((current_date, current_payments.copy()))
   current_payments.clear()
     
-def pay_off_loans(loan_dict, payment_method):
+def pay_off_loans(loan_dict, payment_method, filename):
   """Calculate paying off loans using snowball method
   Snowball method: paying off loans with higher principals first
   Avalanche method: paying off loans with higher interest rate first
   """
   # sort loans by principal and if avalanche resort by interest rate
-  # if payment_method == "snowball":
   active_interest_loans_list = sort_loans_by_principal(loan_dict["active_interest_loans"])
   other_loans_list = sort_loans_by_principal(loan_dict["other_loans"])
   if payment_method == "avalanche":
@@ -243,8 +242,9 @@ def pay_off_loans(loan_dict, payment_method):
   
   while active_interest_loans_list + other_loans_list:
 
+    check_unsubsidized_loans(active_interest_loans_list, current_date)
     # get sum of all monthly minimum due and how much "leftover" money to send to high interest loans
-    payment_left = get_payment_left(active_interest_loans_list, payment_amount)
+    payment_left = get_payment_left(active_interest_loans_list, payment_amount, filename)
     payment_left = pay_active_loans(active_interest_loans_list, payment_left, current_payments, paid_off_loans_list, current_date)
 
     pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_left, current_payments, paid_off_loans_list, current_date, payment_method)
@@ -263,11 +263,12 @@ def get_payment_method():
       payment_method = int(input("enter 1 for Avalanche or 2 for Snowball method: "))
     except ValueError:
       print("Please enter '1' or '2'")
-      
-    if payment_method == 1:
-      return "avalanche"
-    elif payment_method == 2:
-      return "snowball"
+    else:
+      if payment_method == 1:
+        return "avalanche"
+      elif payment_method == 2:
+        return "snowball"
+  
 
 def get_payment_amount():
   while True:
@@ -283,11 +284,7 @@ payment_amount = get_payment_amount()
 payment_freq = 'monthly'
 filename = "output.txt"
 
-# if payment_method == "avalanche":
-paid_off_loans, schedule = pay_off_loans(loan_dict, payment_method)
-# else:
-#   paid_off_loans, schedule = snowball(loan_dict)
-
+paid_off_loans, schedule = pay_off_loans(loan_dict, payment_method, filename)
 how_to_pay_off = {"method": payment_method, "frequency": payment_freq, "payment_amount": payment_amount}
 
 write_valid_output(filename, paid_off_loans, how_to_pay_off)
