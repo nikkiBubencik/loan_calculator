@@ -60,10 +60,7 @@ def get_loan_info(current_date):
   print()
   return Loan(loan_name, loan_amount, interest_amount, interest_rate, start_date, minimum_due, unsubsidized_bool)
     
-
-def get_loans():
-  """Function to get the loan information for each loan from user."""
-  unique_loan_names = set()
+def get_num_loans():
   while True:  
     try:
       num_loans = int(input("How many loans do you have: "))
@@ -72,7 +69,12 @@ def get_loans():
     except ValueError:
       print("Please enter a valid positive integer")
     else:
-      break
+      return num_loans
+    
+def get_loans():
+  """Function to get the loan information for each loan from user."""
+  unique_loan_names = set()
+  num_loans = get_num_loans()
 
   loan_dict = {"active_interest_loans": [], "other_loans": []}
   current_date = datetime.now().date()
@@ -89,6 +91,7 @@ def get_loans():
       count += 1
     unique_loan_names.add(loan.get_name().lower())
     
+    # add loan to correct dictionary key
     if loan.start_date <= current_date:
       loan_dict["active_interest_loans"].append([loan, loan.get_minimum_due()])
       loan.set_in_repayment_bool(True)
@@ -127,14 +130,13 @@ def write_valid_output(filename, paid_off_loans_list, how_to_pay_off):
   
 def write_output_schedule(filename, schedule):
   """Write to a file the schedule of paying off loans"""
-  schedule_file = open(filename, 'w')
-  print("Pyamnet Schedule:", file=schedule_file)
-  print("\t{:20}|{:14}|Balance Left".format("Loan Name", "Payment"), file=schedule_file)
-  for pay_date, payments in schedule:
-    print(pay_date, file=schedule_file)
-    for loan_name, (loan_payment, loan_balance) in payments.items():
-      print(f"\t{loan_name:20}|${loan_payment:<13.2f}|${loan_balance:<.2f}", file=schedule_file)
-  schedule_file.close()
+  with open(filename, 'w') as schedule_file:
+    print("Pyamnet Schedule:", file=schedule_file)
+    print("\t{:20}|{:14}|Balance Left".format("Loan Name", "Payment"), file=schedule_file)
+    for pay_date, payments in schedule:
+      print(pay_date, file=schedule_file)
+      for loan_name, (loan_payment, loan_balance) in payments.items():
+        print(f"\t{loan_name:20}|${loan_payment:<13.2f}|${loan_balance:<.2f}", file=schedule_file)
 
 def delete_file_if_exists(file_path):
     """Check if a file exists and delete it if it does."""
@@ -143,10 +145,10 @@ def delete_file_if_exists(file_path):
         
 def write_invalid_payment_output(filename, minimum_due_sum):
   """Print output that payment method is too low to pay for all minumum paymnets"""
-  output_file = open(filename, "w")
-  print("Invlaid payment amount", file=output_file)
-  print(f"Pkease enter a payment amount that is equal to or more than ${minimum_due_sum}", file=output_file)
-  output_file.close()
+  with open(filename, "w") as output_file:
+    print("Invlaid payment amount", file=output_file)
+    print(f"Pkease enter a payment amount that is equal to or more than ${minimum_due_sum}", file=output_file)
+
   delete_file_if_exists("schedule.txt")
   
 
@@ -160,7 +162,9 @@ def pay_active_loans(active_interest_loans_list, payment_left, current_payments,
   for index, loan in enumerate(active_interest_loans_list):
       old_payment = payment_left
       payment_left = loan[0].make_payment(payment_left + loan[0].get_minimum_due())
+      # add loan contribution to payment schedule 
       current_payments[loan[0].get_name()] = (old_payment - payment_left + loan[0].get_minimum_due(), loan[0].get_total_balance())
+      # Determine if loan is paid off
       if loan[0].get_paid_off_status():
         paid_off_loans_list.append((loan[0], current_date))
       else:
@@ -177,23 +181,33 @@ def check_unsubsidized_loans(active_interest_loans_list, current_date):
         active_interest_loans_list[index][1] = loan.get_minimum_due()
         
 def pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_left, current_payments, paid_off_loans_list, current_date, payment_method):
-  """PUt remaining contribution to loans not currently in repayment or accruing interest"""
+  """Put remaining contribution to loans not currently in repayment or accruing interest"""
+  loans_to_keep = []
+  
   for index, loan in enumerate(other_loans_list):
       old_payment = payment_left
       payment_left = loan[0].make_payment(payment_left)
+      # add loan contribution to payoff schedule
       current_payments[loan[0].get_name()] = (old_payment - payment_left, loan[0].get_total_balance())
       if loan[0].get_paid_off_status():
         paid_off_loans_list.append((loan[0], current_date))
-        del other_loans_list[index]
-      elif is_loan_in_repayment(loan[0].start_date, current_date):
-        other_loans_list[index][0].set_in_repayment_bool(True)
-        active_interest_loans_list.append((other_loans_list[index][0], other_loans_list[index][0].get_minimum_due()))
-        if payment_method == "avalanche":
-          active_interest_loans_list = sort_loans_by_interest_rate(active_interest_loans_list)
-        else:
-          active_interest_loans_list = sort_loans_by_principal(active_interest_loans_list)
-        del other_loans_list[index]
-        
+      else:
+        loans_to_keep.append(loan)
+        # loan is now in repayment
+        if is_loan_in_repayment(loan[0].start_date, current_date):
+          other_loans_list[index][0].set_in_repayment_bool(True)
+          active_interest_loans_list.append((other_loans_list[index][0], other_loans_list[index][0].get_minimum_due()))
+  
+  # if loan becomes active then add to active loans list in correct position
+  if len(other_loans_list) != len(loans_to_keep):
+    other_loans_list[:] = loans_to_keep
+    
+    if payment_method == "avalanche":
+      active_interest_loans_list = sort_loans_by_interest_rate(active_interest_loans_list)
+    else:
+      active_interest_loans_list = sort_loans_by_principal(active_interest_loans_list)
+  return payment_left
+          
 def get_payment_left(active_interest_loans_list, payment_amount):
   """Calculate amount of money left for loans after paying all minimums that are due"""
   minimum_due_sum = sum(loan[1] for loan in active_interest_loans_list)
@@ -216,8 +230,8 @@ def snowball(loan_dict):
   """
   active_interest_loans_list = sort_loans_by_principal(loan_dict["active_interest_loans"])
   other_loans_list = sort_loans_by_principal(loan_dict["other_loans"])
+  
   paid_off_loans_list = []
-
   current_date = datetime.now().date()
   schedule = []
   current_payments = {}
@@ -231,9 +245,8 @@ def snowball(loan_dict):
     pay_inactive_loans(active_interest_loans_list, other_loans_list, payment_left, current_payments, paid_off_loans_list, current_date, "snowball")
 
     update_schedule(schedule, current_date, current_payments)
-
     current_date += timedelta(days=MONTH_DAYS[current_date.month])
-  # print(schedule)
+
   return paid_off_loans_list, schedule
 
 def avalanche(loan_dict):
@@ -242,8 +255,8 @@ def avalanche(loan_dict):
   """
   active_interest_loans_list = sort_loans_by_interest_rate(loan_dict["active_interest_loans"])
   other_loans_list = sort_loans_by_interest_rate(loan_dict["other_loans"])
-  paid_off_loans_list = []
 
+  paid_off_loans_list = []
   current_date = datetime.now().date()
   schedule = []
   current_payments = {}
