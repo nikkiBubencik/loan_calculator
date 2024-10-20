@@ -159,9 +159,9 @@ def pay_active_loans(active_interest_loans_list, payment_left, current_payments,
   loans_to_keep = []
   for index, loan in enumerate(active_interest_loans_list):
       old_payment = payment_left
-      payment_left = loan[0].make_payment(payment_left + loan[0].get_minimum_due())
+      payment_left = loan[0].make_payment(payment_left + loan[1])
       # add loan contribution to payment schedule 
-      current_payments[loan[0].get_name()] = (old_payment - payment_left + loan[0].get_minimum_due(), loan[0].get_total_balance())
+      current_payments[loan[0].get_name()] = (old_payment - payment_left + loan[1], loan[0].get_total_balance())
       # Determine if loan is paid off
       if loan[0].get_paid_off_status():
         paid_off_loans_list.append((loan[0], current_date))

@@ -1,7 +1,0 @@
-Pay Off Method Used: avalanche
-Paying $0.00 to loan repayment monthly
----------------------------------------------
-Loan Name            | Loan Paid Off Date
-
-Your Loans:
-Loan            Principal     Interest Rate   Interest Paid    Minimum     Repayment Start Date
