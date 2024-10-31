@@ -9,7 +9,7 @@ How to run Loan Calculator:
    Snowball: Pays off loans( in repayment or unsubsidized) by highest principal amount first
 4. Enter number of loans you will enter
 5. Enter loan information that is prompted
-   (loan Names must be unique)
+   (loan names must be unique)
 6. Repeat step 4 for each loan 
 7. Enter amount you plan to contribute each month
 8. Look at output.txt For information and if presetn schedule.txt for payoff schedule
