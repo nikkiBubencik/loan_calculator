@@ -3,10 +3,12 @@ Student Loan Payoff Calculator
 How to run Loan Calculator:
 1. run loan_calculator.py in your IDE
 2. Determine which payoff method to use and enter correspoding number:
+
    Avalanche: Pays off loans( in repayment or unsubsidized) by highest interest rate first
+
    Snowball: Pays off loans( in repayment or unsubsidized) by highest principal amount first
-3. Enter number of loans you will enter
-4. Enter loan information that is prompted
+4. Enter number of loans you will enter
+5. Enter loan information that is prompted
    (loan Names must be unique)
 6. Repeat step 4 for each loan 
 7. Enter amount you plan to contribute each month
