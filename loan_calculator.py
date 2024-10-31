@@ -1,8 +1,4 @@
 """
-Nicole Bubencik
-Class: CS 521 - Fall 1
-Date: 10/17/2024
-Final Project
 Student Loan Payoff Calculator
 Gathers a user's student loan information and determines how long it would take to pay off
 """
