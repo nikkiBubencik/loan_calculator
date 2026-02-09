@@ -1,24 +1,45 @@
-Student Loan Payoff Calculator
+# Student Loan Payoff Calculator
 
-How to run Loan Calculator:
-1. run loan_calculator.py in your IDE
-2. Determine which payoff method to use and enter correspoding number:
+Term Project for METCS521: Information Structures with Python
 
-   Avalanche: Pays off loans( in repayment or unsubsidized) by highest interest rate first
+A Python tool that helps users create optimized repayment plans for multiple student loans using either the Avalanche or Snowball payoff methods.
 
-   Snowball: Pays off loans( in repayment or unsubsidized) by highest principal amount first
-   
-4. Enter the number of loans you will enter
-5. Enter the loan information that is prompted
-   (loan names must be unique)
-6. Repeat step 5 for each loan 
-7. Enter amount you plan to contribute each month
-8. Look at output.txt For information and if presetn schedule.txt for payoff schedule
+## Features
 
-If your contribution is less than your monthly payment due the program will stop and write to a file to tell you that your contribution is too low
+- Supports input of multiple loans with unique names, principal amounts, interest rates, and statuses.
 
-Otherwise, you will get two files from th program:
-  
-  output.txt: Will you tell you the payoff method you choose, the frequency of payments and amount contributed each time, Lists your loan names with their payoff dates, and list your loans inforamtion with total interest paid on that loan
-  
-  schedule.tzt: Gives a detailed scheule of paying off your loans. It Will tell you the date of payment and how much was paid to each loan and its remaining balance
+- Choose between two payoff strategies:
+
+   - Avalanche: Pays off loans with the highest interest rates first.
+
+   - Snowball: Pays off loans with the largest principal amounts first.
+
+- Calculates detailed monthly payment schedules showing how much is applied to each loan and remaining balances over time.
+
+- Generates two output files:
+
+   - output.txt: Summary of the payoff plan, including payoff dates and total interest paid per loan.
+
+   - schedule.txt: Detailed payment schedule listing each payment date, amounts applied per loan, and remaining balances.
+
+- Validates user input and warns if the monthly contribution is insufficient to cover minimum payments.
+
+## How to Run
+
+1. Open and run loan_calculator.py in your Python IDE or environment.
+
+2. Select a payoff method by entering the corresponding number.
+
+3. Enter the number of loans you want to input.
+
+4. Provide details for each loan when prompted (ensure loan names are unique).
+
+5. Enter your planned monthly contribution amount.
+
+6. Review output.txt for a summary and, if generated, schedule.txt for the detailed payoff schedule.
+
+7. If your monthly contribution is too low to cover payments, the program will notify you in output.txt.
+
+## Tech Stack
+
+- Python
